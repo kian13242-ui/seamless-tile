@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f7f7f8">
+    <title>Seamless Tile</title>
+    <style>
+:root {
+  --bg: oklch(97% 0.005 250);
+  --surface: oklch(100% 0 0);
+  --border: oklch(88% 0.008 250);
+  --text: oklch(18% 0.01 250);
+  --muted: oklch(52% 0.01 250);
+  --accent: oklch(55% 0.18 270);
+  --accent-hover: oklch(48% 0.18 270);
+  --danger: oklch(55% 0.2 25);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --shadow: 0 1px 3px oklch(0% 0 0 / 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: oklch(14% 0.008 250);
+    --surface: oklch(18% 0.008 250);
+    --border: oklch(28% 0.01 250);
+    --text: oklch(93% 0.005 250);
+    --muted: oklch(60% 0.01 250);
+    --accent: oklch(68% 0.16 270);
+    --accent-hover: oklch(72% 0.16 270);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  padding: 24px 16px;
+  color: var(--text);
+  background: var(--bg);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(100%, 520px);
+  margin: 0 auto;
+  padding: 32px 0;
+}
+
+.app-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 4px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h2 {
+  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.app-header p,
+.upload-help,
+.file-details,
+.preview-size {
+  color: var(--muted);
+}
+
+.app-header p {
+  margin-bottom: 0;
+  font-size: 13px;
+}
+
+.upload-zone {
+  padding: 32px 24px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: border-color 200ms, background 200ms;
+}
+
+.upload-zone.is-dragover {
+  border-color: var(--accent);
+  background: oklch(55% 0.18 270 / 0.06);
+}
+
+.upload-help {
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.file-details {
+  min-height: 24px;
+  margin: 16px 0 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+.status {
+  min-height: 24px;
+  margin: 12px 2px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.status.is-error {
+  color: var(--danger);
+}
+
+.preview-section {
+  margin-top: 24px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.section-heading h2 {
+  margin-bottom: 0;
+}
+
+.preview-size {
+  font-size: 12px;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.preview-grid img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 150ms, transform 150ms;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button-primary {
+  color: white;
+  background: var(--accent);
+}
+
+.button-primary:hover {
+  background: var(--accent-hover);
+}
+
+.button-secondary {
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.button-secondary:hover {
+  background: var(--bg);
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.button:focus-visible,
+.file-picker:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 420px) {
+  body {
+    padding: 16px 12px;
+  }
+
+  .app-shell {
+    padding: 24px 0;
+  }
+
+  .upload-zone {
+    padding: 24px 16px;
+  }
+
+  .actions .button {
+    flex: 1 1 160px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+    </style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <h1>Seamless Tile</h1>
+        <p>Turn a square image into a tileable pattern.</p>
+      </header>
+
+      <section class="upload-zone" id="upload-zone" aria-labelledby="upload-title">
+        <h2 id="upload-title">Upload an image</h2>
+        <p class="upload-help">Choose a square image or drag one here.</p>
+        <label class="button button-primary file-picker" for="image-input">Choose Image</label>
+        <input id="image-input" class="visually-hidden" type="file" accept="image/*">
+        <p class="file-details" id="file-details" aria-live="polite"></p>
+      </section>
+
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+
+      <section class="preview-section" id="preview-section" aria-labelledby="preview-title" hidden>
+        <div class="section-heading">
+          <h2 id="preview-title">Preview</h2>
+          <span class="preview-size" id="preview-size"></span>
+        </div>
+        <div class="preview-grid" id="preview-grid" aria-label="3 by 3 seamless tile preview"></div>
+      </section>
+
+      <section class="actions" id="actions" hidden aria-label="Download options">
+        <button class="button button-primary" id="download-tile" type="button">Download Tile</button>
+        <button class="button button-secondary" id="download-preview" type="button">Download Preview</button>
+      </section>
+    </main>
+
+    <script>
+(function () {
+  'use strict';
+
+  var PIXELS_PER_METER = 11811;
+  var elements = {
+    uploadZone: document.getElementById('upload-zone'),
+    imageInput: document.getElementById('image-input'),
+    fileDetails: document.getElementById('file-details'),
+    status: document.getElementById('status'),
+    previewSection: document.getElementById('preview-section'),
+    previewGrid: document.getElementById('preview-grid'),
+    previewSize: document.getElementById('preview-size'),
+    actions: document.getElementById('actions'),
+    downloadTile: document.getElementById('download-tile'),
+    downloadPreview: document.getElementById('download-preview')
+  };
+
+  var state = {
+    baseName: 'image',
+    size: 0,
+    tileCanvas: null,
+    previewCanvas: null
+  };
+
+  function setStatus(message, isError) {
+    elements.status.textContent = message || '';
+    elements.status.classList.toggle('is-error', Boolean(isError));
+  }
+
+  function clearResult() {
+    state.size = 0;
+    state.tileCanvas = null;
+    state.previewCanvas = null;
+    clearChildren(elements.previewGrid);
+    elements.previewSection.hidden = true;
+    elements.actions.hidden = true;
+    elements.previewSize.textContent = '';
+  }
+
+  function clearChildren(element) {
+    while (element.firstChild) {
+      element.removeChild(element.firstChild);
+    }
+  }
+
+  function getBaseName(filename) {
+    var withoutPath = filename.split('\\').pop().split('/').pop();
+    return withoutPath.replace(/\.[^/.]+$/, '') || 'image';
+  }
+
+  function isImageFile(file) {
+    var mimeType = file && file.type ? file.type : '';
+    return Boolean(file && (mimeType.indexOf('image/') === 0 || /\.(avif|bmp|gif|jpe?g|png|svg|webp)$/i.test(file.name)));
+  }
+
+  function loadFile(file) {
+    clearResult();
+    elements.fileDetails.textContent = '';
+
+    if (!isImageFile(file)) {
+      setStatus('Please upload an image file.', true);
+      return;
+    }
+
+    var objectUrl = URL.createObjectURL(file);
+    var image = new Image();
+
+    image.onload = function () {
+      URL.revokeObjectURL(objectUrl);
+      if (image.naturalWidth !== image.naturalHeight) {
+        setStatus('Please use a square image', true);
+        elements.fileDetails.textContent = file.name;
+        return;
+      }
+
+      try {
+        buildTile(image, file);
+      } catch (error) {
+        setStatus('This image is too large for the browser to process.', true);
+        elements.fileDetails.textContent = file.name;
+      }
+    };
+
+    image.onerror = function () {
+      URL.revokeObjectURL(objectUrl);
+      setStatus('Please upload an image file.', true);
+    };
+
+    image.src = objectUrl;
+  }
+
+  function buildTile(image, file) {
+    var size = image.naturalWidth;
+    var sourceCanvas = document.createElement('canvas');
+    sourceCanvas.width = size;
+    sourceCanvas.height = size;
+    var sourceContext = sourceCanvas.getContext('2d');
+    sourceContext.drawImage(image, 0, 0, size, size);
+
+    var tileCanvas = document.createElement('canvas');
+    tileCanvas.width = size;
+    tileCanvas.height = size;
+    var tileContext = tileCanvas.getContext('2d');
+    var half = size / 2;
+
+    // Roll the source into four quadrants so the original center becomes the seams.
+    tileContext.drawImage(sourceCanvas, half, half);
+    tileContext.drawImage(sourceCanvas, -half, half);
+    tileContext.drawImage(sourceCanvas, half, -half);
+    tileContext.drawImage(sourceCanvas, -half, -half);
+
+    state.baseName = getBaseName(file.name);
+    state.size = size;
+    state.tileCanvas = tileCanvas;
+    state.previewCanvas = createPreviewCanvas(tileCanvas);
+
+    elements.fileDetails.textContent = file.name + ' · ' + size + ' × ' + size + ' px';
+    elements.previewSize.textContent = size + ' × ' + size + ' px tile';
+    setStatus('Tile ready to download.');
+    updatePreview(tileCanvas);
+    elements.previewSection.hidden = false;
+    elements.actions.hidden = false;
+  }
+
+  function updatePreview(tileCanvas) {
+    var tileUrl = tileCanvas.toDataURL('image/png');
+    clearChildren(elements.previewGrid);
+    for (var index = 0; index < 9; index += 1) {
+      var previewImage = document.createElement('img');
+      previewImage.src = tileUrl;
+      previewImage.alt = '';
+      previewImage.decoding = 'async';
+      elements.previewGrid.appendChild(previewImage);
+    }
+  }
+
+  function createPreviewCanvas(tileCanvas) {
+    var previewCanvas = document.createElement('canvas');
+    previewCanvas.width = tileCanvas.width * 3;
+    previewCanvas.height = tileCanvas.height * 3;
+    var previewContext = previewCanvas.getContext('2d');
+    for (var row = 0; row < 3; row += 1) {
+      for (var column = 0; column < 3; column += 1) {
+        previewContext.drawImage(tileCanvas, column * tileCanvas.width, row * tileCanvas.height);
+      }
+    }
+    return previewCanvas;
+  }
+
+  function crc32(bytes) {
+    var table = crc32.table;
+    if (!table) {
+      table = [];
+      for (var tableIndex = 0; tableIndex < 256; tableIndex += 1) {
+        var value = tableIndex;
+        for (var bit = 0; bit < 8; bit += 1) {
+          value = (value & 1) ? (0xedb88320 ^ (value >>> 1)) : (value >>> 1);
+        }
+        table[tableIndex] = value >>> 0;
+      }
+      crc32.table = table;
+    }
+
+    var checksum = 0xffffffff;
+    for (var index = 0; index < bytes.length; index += 1) {
+      checksum = table[(checksum ^ bytes[index]) & 0xff] ^ (checksum >>> 8);
+    }
+    return (checksum ^ 0xffffffff) >>> 0;
+  }
+
+  function writeUint32(bytes, offset, value) {
+    bytes[offset] = (value >>> 24) & 0xff;
+    bytes[offset + 1] = (value >>> 16) & 0xff;
+    bytes[offset + 2] = (value >>> 8) & 0xff;
+    bytes[offset + 3] = value & 0xff;
+  }
+
+  function createDpiPng(dataUrl) {
+    var base64 = dataUrl.split(',')[1];
+    var binary = atob(base64);
+    var pngBytes = new Uint8Array(binary.length);
+    for (var index = 0; index < binary.length; index += 1) {
+      pngBytes[index] = binary.charCodeAt(index);
+    }
+
+    // A PNG signature is 8 bytes, followed by IHDR length (4), type (4), and data (13).
+    var insertAt = 8 + 4 + 4 + 13 + 4;
+    var chunk = new Uint8Array(4 + 4 + 9 + 4);
+    writeUint32(chunk, 0, 9);
+    chunk.set([112, 72, 89, 115], 4); // pHYs
+    writeUint32(chunk, 8, PIXELS_PER_METER);
+    writeUint32(chunk, 12, PIXELS_PER_METER);
+    chunk[16] = 1;
+    var crcInput = new Uint8Array(13);
+    crcInput.set(chunk.slice(4, 17), 0);
+    writeUint32(chunk, 17, crc32(crcInput));
+
+    var output = new Uint8Array(pngBytes.length + chunk.length);
+    output.set(pngBytes.slice(0, insertAt), 0);
+    output.set(chunk, insertAt);
+    output.set(pngBytes.slice(insertAt), insertAt + chunk.length);
+    return output;
+  }
+
+  function downloadCanvas(canvas, filename) {
+    var pngBytes = createDpiPng(canvas.toDataURL('image/png'));
+    var blob = new Blob([pngBytes], { type: 'image/png' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function () { URL.revokeObjectURL(link.href); }, 0);
+  }
+
+  elements.imageInput.addEventListener('change', function (event) {
+    loadFile(event.target.files[0]);
+    event.target.value = '';
+  });
+
+  elements.uploadZone.addEventListener('dragover', function (event) {
+    event.preventDefault();
+    elements.uploadZone.classList.add('is-dragover');
+  });
+
+  elements.uploadZone.addEventListener('dragleave', function () {
+    elements.uploadZone.classList.remove('is-dragover');
+  });
+
+  elements.uploadZone.addEventListener('drop', function (event) {
+    event.preventDefault();
+    elements.uploadZone.classList.remove('is-dragover');
+    loadFile(event.dataTransfer.files[0]);
+  });
+
+  elements.downloadTile.addEventListener('click', function () {
+    if (state.tileCanvas) {
+      downloadCanvas(state.tileCanvas, 'tile-' + state.baseName + '.png');
+    }
+  });
+
+  elements.downloadPreview.addEventListener('click', function () {
+    if (state.previewCanvas) {
+      downloadCanvas(state.previewCanvas, 'preview-' + state.baseName + '.png');
+    }
+  });
+}());
+
+    </script>
+  </body>
+</html>
